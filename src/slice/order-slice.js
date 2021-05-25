@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AxiosService from "../store/axios-service";
 import { toast } from "react-toastify";
 import { selectCartData } from "./cart-slice";
+import { resetCart } from "./cart-slice";
 
 export const getOrders = createAsyncThunk(
   "/orders",
@@ -18,11 +19,6 @@ export const createOrder = createAsyncThunk(
     try {
       const state = thunkAPI.getState();
       const cartProducts = selectCartData(state);
-      console.log({
-        customerName,
-        products: cartProducts,
-        finalPrice,
-      });
 
       await AxiosService.post(`/orders`, {
         customerName,
@@ -30,6 +26,7 @@ export const createOrder = createAsyncThunk(
         finalPrice,
       });
 
+      thunkAPI.dispatch(resetCart());
       toast.success("Roger that");
     } catch {
       toast.error("Something happened...");
@@ -52,6 +49,6 @@ const orderSlice = createSlice({
 
 export const selectOrderData = (state) => state.order.order;
 
-export const { saveOrder } = orderSlice.actions;
+export const { saveOrder, resetOrder } = orderSlice.actions;
 
 export default orderSlice.reducer;
